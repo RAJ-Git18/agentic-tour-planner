@@ -15,21 +15,26 @@ class ClassifyService:
         self.llm = llm
 
     async def classify(self, user_query, message_history):
-        prompt = f"""
-            user message history: {message_history}
-            Help to classify the user intent for the given user query into policy, planning, booking or general.
-            user query: {user_query}
-            If the question is related to the company itself, company policies, cancellations, refunds, or terms of service then return policy
-            If the question is related to the tour planning, creating an itinerary, or finding attractions then return planning
-            If the question is related to booking a trip, hotel, or flight then return booking
-            If the question is related to general inquiry or chitchat or the out of scope question other than the comopany and tour itself then return general
-
-            note: consider the user message history if any while classifying the intent as the user might be trying to continue the 
-            conversation for the certain intent especially tour planning.
-            .
-        """
+        prompt = self._get_classify_prompt(
+            user_query=user_query, message_history=message_history
+        )
         structured_llm = self.llm.with_structured_output(Intent)
         response = await structured_llm.ainvoke(prompt)
         intent = response.model_dump()
         logger.info(f"classify service ----> {intent}")
         return intent["intent"]
+
+    def _get_classify_prompt(self, user_query, message_history):
+        system_context = f"""You are an assistant that classifies user intent.
+        
+User Message History: {message_history}
+
+Intents:
+- policy: Company policies, cancellations, refunds, terms of service.
+- planning: Tour planning, itineraries, finding attractions.
+- booking: Booking trips, hotels, or flights.
+- general: General inquiries, chitchat, or out-of-scope questions.
+
+Note: Consider the message history to see if the user is continuing a previous topic."""
+
+        return [("system", system_context), ("user", f"User query: {user_query}")]

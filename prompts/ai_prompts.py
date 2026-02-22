@@ -2,32 +2,33 @@ class AIPrompts:
     @staticmethod
     def get_tour_constraint_prompt(
         user_query: str, message_history: list, allowed_cities: list
-    ) -> str:
-        return f"""
-                INPUT:
-                user query : {user_query}
-                message history: {message_history}
+    ) -> list:
+        system_content = f"""You are an AI assistant specialized in entity extraction for tour planning.
+        
+Your task is to retrieve the necessary entities (from_city, to_city, days) from the user query and history.
+Database Cities: {allowed_cities}.
+Important: Use full city names. Check message history for previously mentioned entities."""
 
-                Role: You are an AI assistant to retrieve the necessary entity
-                from the above given user query and provide in the following json 
-                format. We have got only 5 cities in the database: {allowed_cities}.
-                Make sure to consider city full names.
+        user_content = f"""Message History: {message_history}
+User Query: {user_query}"""
 
-                Note: check message history for existing entities.
-                """
+        return [
+            ("system", system_content),
+            ("user", user_content),
+        ]
 
     @staticmethod
     def get_missing_constraints_prompt(
         missing_constraints: list, allowed_cities: list
-    ) -> str:
-        return f"""
-                INPUT:
-                missing constraints: {missing_constraints}
-                allowed cities: {allowed_cities}
+    ) -> list:
+        system_content = f"""You are a polite AI travel assistant.
+        
+Your goal is to ask the user to provide the missing information ({missing_constraints}) needed to plan their tour.
+Promote our tour packages for: {', '.join(allowed_cities)}."""
 
-                Role: You are an AI assistant to respond to the user politely to fill the missing constraints to continue the tour planning.
-                Promote our tour package for: {', '.join(allowed_cities)}.
-                """
+        return [
+            ("system", system_content),
+        ]
 
     @staticmethod
     def get_planning_prompt(
@@ -36,22 +37,22 @@ class AIPrompts:
         attractions: list,
         travel: list,
         hotels: list,
-    ) -> str:
-        return f"""
-            You are an expert tour planner. Create a {metadata["days"]}-day tour plan from {metadata["from_city"]} to {metadata["to_city"]}. 
-            
-            USER QUERY: {user_query}
-            
-            DATA:
-            - Attractions: {attractions}
-            - Travel Info: {travel}
-            - Hotels: {hotels}
+    ) -> list:
+        system_content = f"""You are an expert tour planner. Create a {metadata['days']}-day tour plan from {metadata['from_city']} to {metadata['to_city']}.
 
-            INSTRUCTIONS:
-            1. {metadata["days"]}-day itinerary.
-            2. Specific timings.
-            3. Best hotel from data.
-            4. Travel mode/time.
-            5. Use ONLY provided info.
-            6. Title: "Tour Plan for {metadata["from_city"]} to {metadata["to_city"]}"
-            """
+DATA:
+- Attractions: {attractions}
+- Travel Info: {travel}
+- Hotels: {hotels}
+
+INSTRUCTIONS:
+1. Provide a {metadata['days']}-day detailed itinerary with specific timings.
+2. Select the best hotel from the provided data.
+3. Mention travel mode and estimated time.
+4. Use ONLY the provided data. No outside knowledge.
+5. Title: "Tour Plan for {metadata['from_city']} to {metadata['to_city']}\""""
+
+        return [
+            ("system", system_content),
+            ("user", f"User Query: {user_query}"),
+        ]

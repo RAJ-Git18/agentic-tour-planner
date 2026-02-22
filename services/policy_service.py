@@ -28,21 +28,21 @@ class PolicyService(BaseRagService):
         response = await self.llm.ainvoke(prompt)
         return response.content
 
-    def _get_policy_prompt(self, user_query: str, docs: list) -> str:
-        return f"""
-        You are an assistant specialized in addressing user query about company policies, cancellations, and refunds.
+    def _get_policy_prompt(self, user_query: str, docs: list) -> list:
+        system_content = """You are an assistant specialized in addressing user query about company policies, cancellations, and refunds.
 
-        RULES:
-        1. Use ONLY the information provided in the Documents section.
-        2. Do NOT use prior knowledge or assumptions.
-        3. Keep the answer short, precise, and factual. Make sure to provide the answer
-        within a single paragraph without any kind of styling.
-        4. If the documents do not contain the answer, reply exactly:
-        "I am unable to answer that question based on the available information."
+RULES:
+1. Use ONLY the information provided in the Documents section.
+2. Do NOT use prior knowledge or assumptions.
+3. Keep the answer short, precise, and factual. Provide the answer within a single paragraph without styling.
+4. If documents do not contain the answer, reply exactly: "I am unable to answer that question based on the available information.\""""
 
-        User query:
-        {user_query}
+        user_content = f"""User query: {user_query}
 
-        Documents:
-        {"".join(docs)}
-        """
+Documents:
+{"".join(docs)}"""
+
+        return [
+            ("system", system_content),
+            ("user", user_content),
+        ]
