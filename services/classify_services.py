@@ -30,10 +30,10 @@ class ClassifyService:
 User Message History: {message_history}
 
 Intents:
-- policy: Company policies, cancellations, refunds, terms of service.
-- planning: Tour planning, itineraries, finding attractions.
+- policy: Company information, name, policies, cancellations, refunds, or terms of service.
+- planning: Tour planning, itineraries, finding attractions, or destination queries.
 - booking: Booking trips, hotels, or flights.
-- general: General inquiries, chitchat, or out-of-scope questions.
+- general: Simple greetings (hi, hello), thanks, or irrelevant/out‑of‑scope chat.
 
 Note: Consider the message history to see if the user is continuing a previous topic."""
 

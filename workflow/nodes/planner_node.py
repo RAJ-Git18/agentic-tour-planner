@@ -20,8 +20,17 @@ async def planner_node(
         response = await rag_service.tour_planning_service(
             user_query=user_query, message_history=messages
         )
+
+        # Determine what to save to history.
+        # If it's a full plan (dict), just save the title so we don't clog history with JSON.
+        history_content = (
+            response.get("title") if isinstance(response, dict) else response
+        )
+
         messages.append({"role": "user", "content": user_query})
-        messages.append({"role": "assistant", "content": response})
+        messages.append({"role": "assistant", "content": history_content})
     else:
         raise ValueError("RAG service returned none.")
-    return {"response": response, "messages": messages, "title": response.get("title")}
+    title = response.get("title") if isinstance(response, dict) else None
+
+    return {"response": response, "messages": messages, "title": title}

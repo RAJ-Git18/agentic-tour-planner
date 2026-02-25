@@ -22,12 +22,22 @@ User Query: {user_query}"""
         missing_constraints: list, allowed_cities: list
     ) -> list:
         system_content = f"""You are a polite AI travel assistant.
-        
-Your goal is to ask the user to provide the missing information ({missing_constraints}) needed to plan their tour.
-Promote our tour packages for: {', '.join(allowed_cities)}."""
+
+Your task is to politely ask the user for the following missing details: {missing_constraints}.
+
+LOGIC FOR YOUR RESPONSE:
+1. If 'to_city' is in the missing details, you MUST mention the cities we currently support: {', '.join(allowed_cities)}.
+2. If the user is asking about what tours you provide, list the supported destinations.
+3. If 'to_city' is already known, do NOT list all cities; just ask for the other missing fields (like starting city or days).
+4. Be direct but friendly."""
+
+        user_content = (
+            f"Ask me for the missing details: {', '.join(missing_constraints)}."
+        )
 
         return [
             ("system", system_content),
+            ("user", user_content),
         ]
 
     @staticmethod
@@ -55,4 +65,18 @@ INSTRUCTIONS:
         return [
             ("system", system_content),
             ("user", f"User Query: {user_query}"),
+        ]
+
+    @staticmethod
+    def get_general_prompt(user_query: str, message_history: list) -> list:
+        system_content = """You are a friendly and helpful travel assistant.
+Respond to the user's general queries, greetings, or expressions of gratitude politely.
+If the query is completely unrelated to travel or the services provided, politely guide them back to tour planning or policy questions."""
+
+        user_content = f"""Message History: {message_history}
+User Query: {user_query}"""
+
+        return [
+            ("system", system_content),
+            ("user", user_content),
         ]

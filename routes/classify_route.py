@@ -15,6 +15,8 @@ from dependencies.dependency import (
     get_graph_config,
 )
 
+from schemas.rag_schemas import ClassifyResponse
+
 router = APIRouter(prefix="/api/user-{userid}/classify", tags=["classification"])
 
 
@@ -24,7 +26,7 @@ class UserQuery(BaseModel):
     )
 
 
-@router.post("")
+@router.post("", response_model=ClassifyResponse)
 async def classify_user_query(
     userid: int,
     query: UserQuery,
@@ -64,7 +66,8 @@ async def classify_user_query(
         logger.info(f"Count of messages ----> {len(updated_list_of_messages)}")
         end_time = time.time()
         logger.info(f"Time taken ----> {end_time - start_time}")
-        return result.get("response")
+        logger.info(f"Response ----> {result.get('response')}")
+        return {"response": result.get("response")}
 
     logger.error("No result from the graph")
     raise HTTPException(

@@ -50,6 +50,7 @@ class BaseRagService(ABC):
             sparse_vector=sparse_embedding,
             include_values=False,
             include_metadata=True,
+            filter=filter,
         )
         logger.info(f"Hybrid Search Result completed sucessfully!!")
 

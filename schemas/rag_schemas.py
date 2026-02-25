@@ -1,4 +1,4 @@
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Union
 from pydantic import BaseModel, Field
 
 
@@ -19,6 +19,16 @@ class TourPlan(BaseModel):
     sources_used: List[str] = Field(
         description="Names of attractions/hotels/travel info used"
     )
+
+
+class BookingStatus(BaseModel):
+    status: str
+    booking_id: int
+    message: str
+
+
+class ClassifyResponse(BaseModel):
+    response: Union[str, TourPlan, BookingStatus]
 
 
 class MissingConstraints(BaseModel):

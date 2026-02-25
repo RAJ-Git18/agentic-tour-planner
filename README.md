@@ -1,178 +1,116 @@
-# 🌍 AI Tour Planner
+# Agentic Tour Planner - Nepal
 
-An intelligent tour planning assistant powered by AI that helps users plan trips, get policy information, and make bookings through natural conversation.
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit)](https://streamlit.io/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-2D3748?style=flat&logo=langchain)](https://langchain-ai.github.io/langgraph/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## What Does It Do?
+An advanced, agentic travel orchestration system designed to provide a premium tour planning experience in Nepal. Leveraging **LangGraph** for sophisticated task routing and **Gemini 2.0 Flash** for semantic reasoning, this platform transforms complex travel requests into actionable, structured itineraries.
 
-This system answers travel-related questions and helps plan tours by:
-- **Answering policy questions** (cancellations, refunds, company info)
-- **Creating personalized tour plans** based on your preferences
-- **Managing bookings** for tours
-- **Providing general travel information**
+---
 
-Just ask a question in plain English, and the AI figures out what you need and responds accordingly.
+## System Demonstration
 
-## How It Works
+Explore the end-to-end user journey, showcasing intent classification, RAG-based policy retrieval, and dynamic itinerary generation.
 
-1. **You ask a question**: "What's your cancellation policy?" or "Plan a 3-day trip to Kathmandu"
-2. **AI classifies your intent**: Determines if it's about policy, planning, booking, or general info
-3. **Retrieves relevant information**: Searches through company documents and tour data
-4. **Generates a response**: Uses AI to create a helpful, accurate answer
+<div align="center">
+  <video src="public/demo_video.mp4" width="800" controls></video>
+</div>
+
+---
+
+## Key Value Propositions
+
+*   **Seamless Orchestration**: A custom LangGraph workflow manages conversation state, routing user queries between specialized nodes (Policy, Planning, Booking, and General).
+*   **Hybrid RAG Engine**: Combines dense and sparse vector search via **Pinecone** to retrieve precise hotel data, travel logistics, and corporate policies.
+*   **One-Click Integration**: A self-bootstrapping architecture where the **Streamlit** frontend automatically manages the lifecycle of the **FastAPI** backend.
+*   **Curated Local Intelligence**: Integrated datasets for Kathmandu, Pokhara, Chitwan, Lumbini, and Nagarkot, ensuring high-fidelity local recommendations.
+*   **Transactional Integrity**: Simulated booking workflows with automated confirmation IDs and agency follow-up triggers.
+
+---
+
+## Architecture & Workflow
+
+The system operates as a **Multi-Node Directed Acyclic Graph (DAG)**:
+
+1.  **Classify Node**: Analyzes user intent using LLM-based few-shot classification.
+2.  **Router**: Directs state to the appropriate specialized service.
+3.  **Specialized Nodes**:
+    *   `Planner`: Extracts constraints and generates time-blocked itineraries.
+    *   `Policy`: Answers compliance/refund queries using re-ranked RAG results.
+    *   `Booking`: Executes booking logic and returns transactional status.
+    *   `General`: Handles chitchat and out-of-scope interactions politely.
+
+---
 
 ## Tech Stack
 
-- **Backend**: FastAPI (Python)
-- **AI**: Google Gemini 2.5 Flash + LangGraph
-- **Search**: Pinecone (vector database with hybrid search)
-- **Cache**: Redis
-- **Database**: PostgreSQL
-- **Authentication**: JWT tokens
+| Component | Technology |
+| :--- | :--- |
+| **Logic Orchestration** | LangGraph, LangChain |
+| **LLM Core** | Google Gemini 2.5 Flash |
+| **Backend Framework** | FastAPI (Asynchronous) |
+| **Frontend UI** | Streamlit (Custom CSS) |
+| **Vector Search** | Pinecone (Hybrid Search) |
+| **Caching/Memory** | Redis |
+| **Data Models** | Pydantic V2 |
 
-## Quick Start
+---
 
-### 1. Install Dependencies
-```bash
-# Clone the repo
-git clone https://github.com/RAJ-Git18/agentic-tour-planner.git
-cd tour_planner
+## Installation & Setup
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+### Prerequisites
+- Python 3.10+
+- Redis Server (local or cloud)
+- Pinecone & Google Gemini API Credentials
 
-# Install packages
-pip install -r requirements.txt
-```
-
-### 2. Set Up Environment
-Create a `.env` file:
+### Environment Configuration
+Create a `.env` file in the project root:
 ```env
-PINECONE_API_KEY=your_pinecone_key
-GEMINI_API_KEY=your_google_ai_key
+GEMINI_API_KEY=your_key
+PINECONE_API_KEY=your_key
+PINECONE_INDEX_NAME=tour-planner
 REDIS_HOST=localhost
 REDIS_PORT=6379
-DATABASE_URL=postgresql://user:password@localhost:5432/tour_planner
-SECRET_KEY=your_secret_key
 ```
 
-### 3. Initialize Database
+### Deployment
 ```bash
-alembic upgrade head
+# Clone the repository
+git clone https://github.com/your-username/tour_planner.git
+cd tour_planner
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Launch the unified application
+streamlit run app.py
 ```
 
-### 4. Run the Server
-```bash
-uvicorn main:app --reload
+---
+
+## Repository Structure
+
+```text
+├── alembic/                # Database migration scripts
+├── database/               # Database connection and setup
+├── dependencies/           # FastAPI dependency injection logic
+├── documents/              # Knowledge base (JSON/TXT) for RAG
+├── models/                 # SQLAlchemy database models
+├── prompts/                # Centralized AI system prompts
+├── public/                 # Demo assets and media
+├── routes/                 # FastAPI endpoint definitions
+├── schemas/                # Pydantic data validation schemas
+├── services/               # Core business logic and AI services
+├── utils/                  # Shared utility functions (logging, etc.)
+├── workflow/               # LangGraph state and node definitions
+├── app.py                  # Streamlit frontend & backend controller
+├── main.py                 # FastAPI application entry point
+├── config.py               # Global configuration and settings
+└── requirements.txt        # Project dependencies
 ```
 
-Visit http://localhost:8000/docs to see the API documentation.
-
-## How to Use
-
-### Register a User
-```bash
-curl -X POST "http://localhost:8000/auth/register" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "john",
-    "email": "john@example.com",
-    "password": "password123"
-  }'
-```
-
-### Login
-```bash
-curl -X POST "http://localhost:8000/auth/token" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=john&password=password123"
-```
-
-### Ask a Question
-```bash
-curl -X POST "http://localhost:8000/api/user-1/classify" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "user_query": "What is your cancellation policy?",
-    "title": "Policy Question"
-  }'
-```
-
-## Project Structure
-
-```
-tour_planner/
-├── services/          # Business logic (RAG, embeddings, ranking)
-├── routes/            # API endpoints
-├── workflow/          # LangGraph workflow (classify → route → respond)
-├── models/            # Database models
-├── documents/         # Knowledge base (company info, hotels, attractions)
-├── config.py          # Settings
-└── main.py            # App entry point
-```
-
-## Key Features
-
-### 🔍 Smart Search
-Uses **hybrid search** combining:
-- Semantic search (understands meaning)
-- Keyword search (exact matches)
-- AI reranking (picks the best results)
-
-### 💬 Conversation Memory
-Remembers your conversation using Redis cache.
-
-### 🎯 Accurate Responses
-Uses a two-step process:
-1. Find 6 relevant documents
-2. Rerank to get the top 3 best matches
-3. Generate answer using only those documents
-
-### ⚡ Fast Performance
-- Caches embeddings in Redis
-- Parallel processing
-- Async operations
-
-## API Endpoints
-
-| Endpoint | Method | What It Does |
-|----------|--------|--------------|
-| `/auth/register` | POST | Create new user |
-| `/auth/token` | POST | Login and get token |
-| `/api/{user_id}/classify` | POST | Ask any question |
-| `/api/v1/vector-db/upload` | POST | Upload documents |
-
-## Docker Deployment
-
-```bash
-# Build and run
-docker-compose up -d
-```
-
-This starts the app, PostgreSQL, and Redis together.
-
-## Environment Variables
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `PINECONE_API_KEY` | Pinecone API key | `abc123...` |
-| `GEMINI_API_KEY` | Google AI API key | `xyz789...` |
-| `REDIS_HOST` | Redis server host | `localhost` |
-| `DATABASE_URL` | PostgreSQL connection | `postgresql://...` |
-| `SECRET_KEY` | JWT secret key | `your-secret` |
+---
 
 ## Contributing
-
-1. Fork the repo
-2. Create a branch (`git checkout -b feature/new-feature`)
-3. Commit changes (`git commit -m 'Add feature'`)
-4. Push (`git push origin feature/new-feature`)
-5. Open a Pull Request
-
-## License
-
-MIT License - feel free to use this project.
-
-## Author
-
-**Raj Simkhada** - [GitHub](https://github.com/RAJ-Git18)
+Contributions are welcome! Please feel free to submit a Pull Request.

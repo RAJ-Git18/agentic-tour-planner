@@ -31,6 +31,10 @@ class TourPlannerService(BaseRagService):
             self._fetch_data(user_query, entity_metadata, "hotels"),
         )
 
+        logger.info(f"Attractions -----> {attractions}")
+        logger.info(f"Travel Info -----> {travel_info}")
+        logger.info(f"Hotels -----> {hotels}")
+
         # 3. Generate the tour plan
         prompt = AIPrompts.get_planning_prompt(
             user_query, entity_metadata, attractions, travel_info, hotels
@@ -59,7 +63,7 @@ class TourPlannerService(BaseRagService):
         )
         structured_llm = self.llm.with_structured_output(MissingConstraints)
         missing_constraints_resp = await structured_llm.ainvoke(prompt)
-        return missing_constraints_resp.model_dump()
+        return missing_constraints_resp.response
 
     async def _fetch_data(self, query: str, metadata: dict, data_type: str):
         results = await self.hybrid_search(
@@ -70,7 +74,10 @@ class TourPlannerService(BaseRagService):
                 "type": data_type,
             },
         )
-        return [match["metadata"]["content"] for match in results["matches"]]
+        return [
+            match["metadata"].get("content") or match["metadata"].get("text", "")
+            for match in results["matches"]
+        ]
 
     async def _fetch_travel_hours(self, query: str, metadata: dict):
         results = await self.hybrid_search(
@@ -79,7 +86,10 @@ class TourPlannerService(BaseRagService):
             filter={
                 "to_city": metadata["to_city"].strip().lower(),
                 "from_city": metadata["from_city"].strip().lower(),
-                "type": "travel_hour",
+                "type": "travel_info",
             },
         )
-        return [match["metadata"]["content"] for match in results["matches"]]
+        return [
+            match["metadata"].get("content") or match["metadata"].get("text", "")
+            for match in results["matches"]
+        ]

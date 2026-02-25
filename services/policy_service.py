@@ -15,7 +15,8 @@ class PolicyService(BaseRagService):
 
         # Extract documents from Pinecone matches
         retrieved_doc_list = [
-            match["metadata"]["content"] for match in retriever_results["matches"]
+            match["metadata"].get("content") or match["metadata"].get("text", "")
+            for match in retriever_results["matches"]
         ]
 
         top_3_docs = await self.ranking_service.rank_documents(
@@ -35,7 +36,9 @@ RULES:
 1. Use ONLY the information provided in the Documents section.
 2. Do NOT use prior knowledge or assumptions.
 3. Keep the answer short, precise, and factual. Provide the answer within a single paragraph without styling.
-4. If documents do not contain the answer, reply exactly: "I am unable to answer that question based on the available information.\""""
+4. Always provide the answer in the same language as the user query also consider the user intent.
+5. If there is no proper answer in the documents, tell user that there is no answer to this question and ask them to contact the support team.
+"""
 
         user_content = f"""User query: {user_query}
 
