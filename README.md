@@ -13,9 +13,11 @@ An advanced, agentic travel orchestration system designed to provide a premium t
 
 Explore the end-to-end user journey, showcasing intent classification, RAG-based policy retrieval, and dynamic itinerary generation.
 
-<div align="center">
-  <video src="public/demo_video.mp4" width="800" controls></video>
-</div>
+
+
+https://github.com/user-attachments/assets/019784e6-67ee-4f20-831d-c7d905dcd70e
+
+
 
 ---
 
