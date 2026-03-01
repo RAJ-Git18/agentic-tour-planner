@@ -15,6 +15,7 @@ async def booking_node(
     user_query = state.get("user_query")
     messages = state.get("messages") or []
     title = state.get("title")
+    intent = state.get("intent")
 
     # Fallback: if title is missing from state, look for it in the last assistant message
     if not title:
@@ -29,8 +30,8 @@ async def booking_node(
         title = "Planned Tour"  # Final fallback to avoid DB error
 
     if booking_service and user_query:
-        response = booking_service.booking_service(
-            user_id=state.get("user_id"), title=title
+        response = booking_service.route_booking_cancel_confirm(
+            user_id=state.get("user_id"), title=title, intent=intent
         )
         messages.append({"role": "user", "content": user_query})
         messages.append({"role": "assistant", "content": response})

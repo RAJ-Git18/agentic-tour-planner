@@ -30,6 +30,10 @@ def router_node(state: GraphState):
         return "policy"
     elif intent == "planning":
         return "planning"
-    elif intent == "booking":
+    elif (
+        intent == "confirm_booking"
+        or intent == "cancel_booking"
+        or intent == "ask_booking"
+    ):
         return "booking"
     return "general"

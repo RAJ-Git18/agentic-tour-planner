@@ -23,10 +23,8 @@ def start_backend():
         # If not, start it
         process = subprocess.Popen(
             ["uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
         )
-        time.sleep(5)  # Give it time to boot
+        time.sleep(2)  # Give it time to boot
         return process
 
 

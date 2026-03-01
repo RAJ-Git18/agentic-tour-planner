@@ -23,7 +23,8 @@ class TourPlan(BaseModel):
 
 class BookingStatus(BaseModel):
     status: str
-    booking_id: int
+    booking_id: Optional[int] = None
+    booking_titles: Optional[List[str]] = None
     message: str
 
 

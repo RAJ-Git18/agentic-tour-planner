@@ -32,7 +32,9 @@ User Message History: {message_history}
 Intents:
 - policy: Company information, name, policies, cancellations, refunds, or terms of service.
 - planning: Tour planning, itineraries, finding attractions, or destination queries.
-- booking: Booking trips, hotels, or flights.
+- ask_booking: Ask for the booking of the user as per the plan created like is the booking confirmed or not, what is the status of the booking.
+- confirm_booking: Confirming the booking of the user as per the plan created.
+- cancel_booking: Cancelling an existing booking or trip.
 - general: Simple greetings (hi, hello), thanks, or irrelevant/out‑of‑scope chat.
 
 Note: Consider the message history to see if the user is continuing a previous topic."""
