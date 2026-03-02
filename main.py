@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from database.database_setup import Base, engine
-from routes import classify_route, vector_db_route, user_register_route, database_route
+from routes import classify_route, vector_db_route, user_register_route, database_route, evaluation_route
 from services.manager import Manager
 
 
@@ -23,3 +23,4 @@ app.include_router(classify_route.router)
 app.include_router(vector_db_route.router)
 app.include_router(user_register_route.router)
 app.include_router(database_route.router)
+app.include_router(evaluation_route.router)

@@ -35,3 +35,6 @@ dist/
 # Uncomment the line below if you store credentials in alembic.ini
 # alembic.ini
 
+
+data/*
+

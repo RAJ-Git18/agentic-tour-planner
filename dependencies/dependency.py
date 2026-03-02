@@ -21,6 +21,7 @@ from services import (
     pinecone_service,
     manager,
     general_service,
+    evaluation_service,
 )
 from database.database_setup import SessionLocal
 from models.models import User
@@ -99,6 +100,10 @@ def get_rag_service(
 def get_classify_service(instances=Depends(manager_instances)):
     llm = instances["llm"]
     return classify_services.ClassifyService(llm=llm)
+
+
+def get_evaluation_service(classify_service=Depends(get_classify_service)):
+    return evaluation_service.EvaluationService(classify_service=classify_service)
 
 
 def get_general_service(instances=Depends(manager_instances)):

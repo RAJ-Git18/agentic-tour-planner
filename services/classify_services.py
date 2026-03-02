@@ -1,5 +1,6 @@
 from utils.logger import logger
 from pydantic import BaseModel
+from typing import List
 
 
 class Intent(BaseModel):
@@ -14,7 +15,7 @@ class ClassifyService:
     def __init__(self, llm):
         self.llm = llm
 
-    async def classify(self, user_query, message_history):
+    async def classify(self, user_query, message_history: List[str] | None = None):
         prompt = self._get_classify_prompt(
             user_query=user_query, message_history=message_history
         )
