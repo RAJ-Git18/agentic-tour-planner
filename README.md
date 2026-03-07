@@ -114,5 +114,63 @@ streamlit run app.py
 
 ---
 
+## Evaluation metrics
+
+```text
+{
+  "ask_booking": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 14.0
+  },
+  "cancel_booking": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 5.0
+  },
+  "confirm_booking": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 3.0
+  },
+  "general": {
+    "precision": 0.9230769230769231,
+    "recall": 0.96,
+    "f1-score": 0.9411764705882353,
+    "support": 25.0
+  },
+  "planning": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 25.0
+  },
+  "policy": {
+    "precision": 0.9629629629629629,
+    "recall": 0.9285714285714286,
+    "f1-score": 0.9454545454545454,
+    "support": 28.0
+  },
+  "accuracy": 0.97,
+  "macro avg": {
+    "precision": 0.9810066476733144,
+    "recall": 0.9814285714285714,
+    "f1-score": 0.9811051693404634,
+    "support": 100.0
+  },
+  "weighted avg": {
+    "precision": 0.9703988603988605,
+    "recall": 0.97,
+    "f1-score": 0.9700213903743315,
+    "support": 100.0
+  }
+}
+```
+
+---
+
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
