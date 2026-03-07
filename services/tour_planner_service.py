@@ -25,15 +25,22 @@ class TourPlannerService(BaseRagService):
             return await self._handle_missing_constraints(missing_constraints)
 
         # 2. Fetch relevant data from vector store
-        attractions, travel_info, hotels = await asyncio.gather(
-            self._fetch_data(user_query, entity_metadata, "tour_attraction"),
+        # We fetch more candidates (k=6) to allow for re-ranking
+        attractions_raw, travel_info, hotels_raw = await asyncio.gather(
+            self._fetch_data(user_query, entity_metadata, "tour_attraction", k=6),
             self._fetch_travel_hours(user_query, entity_metadata),
-            self._fetch_data(user_query, entity_metadata, "hotels"),
+            self._fetch_data(user_query, entity_metadata, "hotels", k=6),
         )
 
-        logger.info(f"Attractions -----> {attractions}")
+        # Apply Cross-Encoder Re-ranking
+        attractions, hotels = await asyncio.gather(
+            self.ranking_service.rank_documents(user_query, attractions_raw, top_k=3),
+            self.ranking_service.rank_documents(user_query, hotels_raw, top_k=3),
+        )
+
+        logger.info(f"Reranked Attractions -----> {attractions}")
         logger.info(f"Travel Info -----> {travel_info}")
-        logger.info(f"Hotels -----> {hotels}")
+        logger.info(f"Reranked Hotels -----> {hotels}")
 
         # 3. Generate the tour plan
         prompt = AIPrompts.get_planning_prompt(
@@ -65,10 +72,10 @@ class TourPlannerService(BaseRagService):
         missing_constraints_resp = await structured_llm.ainvoke(prompt)
         return missing_constraints_resp.response
 
-    async def _fetch_data(self, query: str, metadata: dict, data_type: str):
+    async def _fetch_data(self, query: str, metadata: dict, data_type: str, k: int = 3):
         results = await self.hybrid_search(
             query=query,
-            k=3,
+            k=k,
             filter={
                 "city": metadata["to_city"].strip().lower(),
                 "type": data_type,

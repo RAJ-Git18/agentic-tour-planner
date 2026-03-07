@@ -19,7 +19,7 @@ class EvaluationService:
                 user_query, message_history=[]
             )
             predicted_intent_list.append(intent)
-            logger.info(f"Query {idx + 1}: {user_query}----------> {intent}")
+            logger.info(f"Completed Query {idx + 1}")
         self.df["predicted_intent"] = predicted_intent_list
 
     async def get_classification_report(self):

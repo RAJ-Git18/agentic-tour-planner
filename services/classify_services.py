@@ -4,6 +4,7 @@ from typing import List
 
 
 class Intent(BaseModel):
+    reasoning: str
     intent: str
 
 
@@ -21,23 +22,27 @@ class ClassifyService:
         )
         structured_llm = self.llm.with_structured_output(Intent)
         response = await structured_llm.ainvoke(prompt)
-        intent = response.model_dump()
-        logger.info(f"classify service ----> {intent}")
-        return intent["intent"]
+        intent_data = response.model_dump()
+        logger.info(f"classify reasoning ----> {intent_data['reasoning']}")
+        logger.info(f"classify result ----> {intent_data['intent']}")
+        return intent_data["intent"]
 
     def _get_classify_prompt(self, user_query, message_history):
-        system_context = f"""You are an assistant that classifies user intent.
-        
-User Message History: {message_history}
+        system_context = """You are an expert intent classifier for a Nepal-based tour planning service.
+Your task is to categorize the user's query and provide a brief reasoning.
 
 Intents:
-- policy: Company information, name, policies, cancellations, refunds, or terms of service.
-- planning: Tour planning, itineraries, finding attractions, or destination queries.
-- ask_booking: Ask for the booking of the user as per the plan created like is the booking confirmed or not, what is the status of the booking.
-- confirm_booking: Confirming the booking of the user as per the plan created.
-- cancel_booking: Cancelling an existing booking or trip.
-- general: Simple greetings (hi, hello), thanks, or irrelevant/out‑of‑scope chat.
+- policy: Questions about rules, terms, or 'how-to' procedures. (e.g., "What is the refund policy?", "How do I cancel?").
+- planning: Trip creation, itineraries, attractions. (e.g., "Plan a day in KTM").
+- ask_booking: Checking STATUS or DETAILS of an existing booking. (e.g., "Is my trip confirmed?", "What is the status?", "Verify my reservation").
+- confirm_booking: DIRECT INSTRUCTION to finalize, pay, or execute a new booking. (e.g., "Book it now", "Finalize payment", "Go ahead with booking").
+- cancel_booking: DIRECT INSTRUCTION to cancel an active booking. (e.g., "Cancel reservation NP-12345").
+- general: Greetings, thanks, or random chat.
 
-Note: Consider the message history to see if the user is continuing a previous topic."""
+CRITICAL RULE for 'Confirm':
+- If the user uses the word 'confirm' to ask about status (e.g., "I want to confirm my booking is safe"), use 'ask_booking'.
+- If the user uses the word 'confirm' to give an order (e.g., "Confirm this booking now"), use 'confirm_booking'.
+
+User Message History: {message_history}"""
 
         return [("system", system_context), ("user", f"User query: {user_query}")]
